@@ -78,8 +78,3 @@ calculator/
 - **Calculator.java**: Main class containing both the GUI and calculation logic
 - **CalculatorTest.java**: Unit tests for the calculation functionality
 - **build.gradle**: Gradle build configuration
-
-
-## License
-
-This project is created for educational purposes and is free to use and modify.
