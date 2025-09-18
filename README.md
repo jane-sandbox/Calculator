@@ -19,9 +19,6 @@ A basic calculator application built with Java Swing and Gradle, featuring a cle
 ```
 calculator/
 ├── build.gradle
-├── gradle/
-│   └── wrapper/
-│       └── gradle-wrapper.properties
 ├── src/
 │   ├── main/
 │   │   └── java/
@@ -45,51 +42,14 @@ calculator/
 
 ## How to Run
 
-### Using Gradle Wrapper (Recommended)
+### Using Gradle 
 
 1. **Clone or download the project**
 2. **Navigate to the project directory**
 3. **Run the calculator:**
    ```bash
-   # On Windows
-   gradlew run
-   
-   # On macOS/Linux
-   ./gradlew run
+   gradle run
    ```
-
-### Alternative: Using the custom task
-
-```bash
-# On Windows
-gradlew runCalculator
-
-# On macOS/Linux
-./gradlew runCalculator
-```
-
-## Building the Project
-
-### Compile the project:
-```bash
-./gradlew build
-```
-
-### Run tests:
-```bash
-./gradlew test
-```
-
-### Create a JAR file:
-```bash
-./gradlew jar
-```
-The JAR file will be created in `build/libs/calculator-1.0.0.jar`
-
-### Run the JAR file:
-```bash
-java -jar build/libs/calculator-1.0.0.jar
-```
 
 ## Usage
 
@@ -119,23 +79,6 @@ java -jar build/libs/calculator-1.0.0.jar
 - **CalculatorTest.java**: Unit tests for the calculation functionality
 - **build.gradle**: Gradle build configuration
 
-### Future Enhancements
-
-- Extract calculation logic into a separate `CalculatorEngine` class
-- Add memory functions (M+, M-, MR, MC)
-- Implement keyboard support
-- Add more advanced operations (square root, percentage, etc.)
-- Improve GUI responsiveness and appearance
-
-## Testing
-
-The project includes basic unit tests for the calculation logic. Run tests with:
-
-```bash
-./gradlew test
-```
-
-Test results will be available in `build/reports/tests/test/index.html`
 
 ## License
 
