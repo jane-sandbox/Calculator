@@ -4,20 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 
 /**
  * A simple calculator GUI application with basic arithmetic operations.
  */
 public class Calculator extends JFrame implements ActionListener {
     private JTextField display;
-    private StringBuilder currentInput;
-    private double firstOperand;
-    private String operator;
-    private boolean startNewNumber;
+    private StringBuilder expression;
+    private boolean justCalculated;
 
     public Calculator() {
-        currentInput = new StringBuilder();
-        startNewNumber = true;
+        expression = new StringBuilder();
+        justCalculated = false;
         
         setupUI();
     }
@@ -47,7 +46,7 @@ public class Calculator extends JFrame implements ActionListener {
             "7", "8", "9", "×",
             "4", "5", "6", "-",
             "1", "2", "3", "+",
-            "±", "0", ".", "="
+            "(", "0", ")", "="
         };
         
         // Create and add buttons
@@ -73,7 +72,7 @@ public class Calculator extends JFrame implements ActionListener {
         // Color coding for different button types
         if (text.matches("[0-9]") || text.equals(".")) {
             button.setBackground(Color.WHITE);
-        } else if (text.matches("[+\\-×÷=]")) {
+        } else if (text.matches("[+\\-×÷=()]")) {
             button.setBackground(new Color(255, 165, 0)); // Orange for operators
             button.setForeground(Color.WHITE);
         } else {
@@ -97,127 +96,76 @@ public class Calculator extends JFrame implements ActionListener {
             case "⌫":
                 backspace();
                 break;
-            case "±":
-                toggleSign();
-                break;
             case "+":
             case "-":
             case "×":
             case "÷":
-                handleOperator(command);
+            case "(":
+            case ")":
+                addToExpression(command);
                 break;
             case "=":
                 calculate();
                 break;
             case ".":
-                addDecimalPoint();
+                addToExpression(command);
                 break;
             default:
                 // Number buttons (0-9)
                 if (command.matches("[0-9]")) {
-                    addDigit(command);
+                    addToExpression(command);
                 }
                 break;
         }
     }
     
     private void clearAll() {
-        currentInput.setLength(0);
+        expression.setLength(0);
         display.setText("0");
-        firstOperand = 0;
-        operator = null;
-        startNewNumber = true;
+        justCalculated = false;
     }
     
     private void clearEntry() {
-        currentInput.setLength(0);
-        display.setText("0");
-        startNewNumber = true;
+        if (expression.length() > 0) {
+            expression.deleteCharAt(expression.length() - 1);
+            if (expression.length() == 0) {
+                display.setText("0");
+            } else {
+                display.setText(expression.toString());
+            }
+        }
     }
     
     private void backspace() {
-        String current = display.getText();
-        if (current.length() > 1 && !current.equals("0")) {
-            current = current.substring(0, current.length() - 1);
-            display.setText(current);
-        } else {
-            display.setText("0");
-            startNewNumber = true;
-        }
-    }
-    
-    private void toggleSign() {
-        String current = display.getText();
-        if (!current.equals("0")) {
-            if (current.startsWith("-")) {
-                display.setText(current.substring(1));
+        if (expression.length() > 0) {
+            expression.deleteCharAt(expression.length() - 1);
+            if (expression.length() == 0) {
+                display.setText("0");
             } else {
-                display.setText("-" + current);
+                display.setText(expression.toString());
             }
         }
     }
     
-    private void addDigit(String digit) {
-        String current = display.getText();
-        
-        if (startNewNumber || current.equals("0")) {
-            display.setText(digit);
-            startNewNumber = false;
-        } else {
-            display.setText(current + digit);
+    private void addToExpression(String input) {
+        if (justCalculated && input.matches("[0-9(.]")) {
+            expression.setLength(0);
+            justCalculated = false;
         }
+        
+        expression.append(input);
+        display.setText(expression.toString());
     }
     
-    private void addDecimalPoint() {
-        String current = display.getText();
-        
-        if (startNewNumber) {
-            display.setText("0.");
-            startNewNumber = false;
-        } else if (!current.contains(".")) {
-            display.setText(current + ".");
-        }
-    }
-    
-    private void handleOperator(String newOperator) {
-        if (operator != null && !startNewNumber) {
-            calculate();
-        }
-        
-        firstOperand = Double.parseDouble(display.getText());
-        operator = newOperator;
-        startNewNumber = true;
-    }
     
     private void calculate() {
-        if (operator == null) {
+        if (expression.length() == 0) {
             return;
         }
         
-        double secondOperand = Double.parseDouble(display.getText());
-        double result = 0;
-        
         try {
-            switch (operator) {
-                case "+":
-                    result = firstOperand + secondOperand;
-                    break;
-                case "-":
-                    result = firstOperand - secondOperand;
-                    break;
-                case "×":
-                    result = firstOperand * secondOperand;
-                    break;
-                case "÷":
-                    if (secondOperand == 0) {
-                        display.setText("Error: Division by zero");
-                        operator = null;
-                        startNewNumber = true;
-                        return;
-                    }
-                    result = firstOperand / secondOperand;
-                    break;
-            }
+            String expr = expression.toString().replace("×", "*").replace("÷", "/");
+            double result = evaluateExpression(expr);
             
             // Format result to remove unnecessary decimal places
             if (result == (long) result) {
@@ -226,13 +174,88 @@ public class Calculator extends JFrame implements ActionListener {
                 display.setText(String.valueOf(result));
             }
             
+            expression.setLength(0);
+            expression.append(display.getText());
+            justCalculated = true;
+            
         } catch (Exception ex) {
             display.setText("Error");
+            expression.setLength(0);
+        }
+    }
+    
+    private double evaluateExpression(String expr) throws Exception {
+        return new ExpressionEvaluator().evaluate(expr);
+    }
+    
+    private static class ExpressionEvaluator {
+        private int pos = -1, ch;
+        
+        public double evaluate(String expression) throws Exception {
+            this.pos = -1;
+            return parse(expression);
         }
         
-        operator = null;
-        startNewNumber = true;
-        firstOperand = result;
+        private void nextChar(String str) {
+            ch = (++pos < str.length()) ? str.charAt(pos) : -1;
+        }
+        
+        private boolean eat(int charToEat, String str) {
+            while (ch == ' ') nextChar(str);
+            if (ch == charToEat) {
+                nextChar(str);
+                return true;
+            }
+            return false;
+        }
+        
+        private double parse(String str) throws Exception {
+            nextChar(str);
+            double x = parseExpression(str);
+            if (pos < str.length()) throw new Exception("Unexpected: " + (char)ch);
+            return x;
+        }
+        
+        private double parseExpression(String str) throws Exception {
+            double x = parseTerm(str);
+            for (;;) {
+                if      (eat('+', str)) x += parseTerm(str);
+                else if (eat('-', str)) x -= parseTerm(str);
+                else return x;
+            }
+        }
+        
+        private double parseTerm(String str) throws Exception {
+            double x = parseFactor(str);
+            for (;;) {
+                if      (eat('*', str)) x *= parseFactor(str);
+                else if (eat('/', str)) {
+                    double divisor = parseFactor(str);
+                    if (divisor == 0) throw new Exception("Division by zero");
+                    x /= divisor;
+                }
+                else return x;
+            }
+        }
+        
+        private double parseFactor(String str) throws Exception {
+            if (eat('+', str)) return parseFactor(str);
+            if (eat('-', str)) return -parseFactor(str);
+            
+            double x;
+            int startPos = this.pos;
+            if (eat('(', str)) {
+                x = parseExpression(str);
+                if (!eat(')', str)) throw new Exception("Missing ')'");
+            } else if ((ch >= '0' && ch <= '9') || ch == '.') {
+                while ((ch >= '0' && ch <= '9') || ch == '.') nextChar(str);
+                x = Double.parseDouble(str.substring(startPos, this.pos));
+            } else {
+                throw new Exception("Unexpected: " + (char)ch);
+            }
+            
+            return x;
+        }
     }
 
     public static void main(String[] args) {

@@ -2,6 +2,7 @@ package com.example.calculator;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.lang.reflect.Method;
 
 /**
  * Basic unit tests for the Calculator functionality.
@@ -52,6 +53,36 @@ public class CalculatorTest {
         performCalculation(10.0, "÷", 0.0);
     }
     
+    @Test
+    public void testSimpleBrackets() {
+        double result = evaluateExpression("(2+3)*4");
+        assertEquals("Simple brackets test failed", 20.0, result, 0.001);
+    }
+    
+    @Test
+    public void testNestedBrackets() {
+        double result = evaluateExpression("((2+3)*4)-5");
+        assertEquals("Nested brackets test failed", 15.0, result, 0.001);
+    }
+    
+    @Test
+    public void testComplexExpression() {
+        double result = evaluateExpression("2+(3*4)-(5/2)");
+        assertEquals("Complex expression test failed", 11.5, result, 0.001);
+    }
+    
+    @Test
+    public void testBracketsWithDecimal() {
+        double result = evaluateExpression("(2.5+1.5)*2");
+        assertEquals("Brackets with decimal test failed", 8.0, result, 0.001);
+    }
+    
+    @Test
+    public void testOrderOfOperations() {
+        double result = evaluateExpression("2+3*4");
+        assertEquals("Order of operations test failed", 14.0, result, 0.001);
+    }
+    
     /**
      * Helper method to simulate calculator operations
      * In a production app, this logic would be extracted to a separate Calculator class
@@ -71,6 +102,21 @@ public class CalculatorTest {
                 return first / second;
             default:
                 throw new IllegalArgumentException("Unknown operator: " + operator);
+        }
+    }
+    
+    /**
+     * Helper method to test expression evaluation with brackets
+     */
+    private double evaluateExpression(String expression) {
+        try {
+            Calculator calculator = new Calculator();
+            Method evaluateMethod = Calculator.class.getDeclaredMethod("evaluateExpression", String.class);
+            evaluateMethod.setAccessible(true);
+            String normalizedExpr = expression.replace("×", "*").replace("÷", "/");
+            return (Double) evaluateMethod.invoke(calculator, normalizedExpr);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to evaluate expression: " + expression, e);
         }
     }
 }
