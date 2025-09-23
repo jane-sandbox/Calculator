@@ -1,4 +1,4 @@
-# Simple Java Calculator
+# Calculator Example Project Written in Java
 
 A basic calculator application built with Java Swing and Gradle, featuring a clean GUI for performing arithmetic operations.
 
