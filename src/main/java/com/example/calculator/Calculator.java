@@ -23,7 +23,7 @@ public class Calculator extends JFrame implements ActionListener {
     }
 
     private void setupUI() {
-        setTitle("Simple Calculator");
+        setTitle("Simple Calculator - hopefully this works");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         
