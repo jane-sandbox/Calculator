@@ -51,6 +51,21 @@ public class CalculatorTest {
     public void testDivisionByZero() {
         performCalculation(10.0, "÷", 0.0);
     }
+
+    @Test
+    public void testSquareRoot() {
+        assertEquals("Square root of 9 failed", 3.0, Math.sqrt(9.0), 0.001);
+    }
+
+    @Test
+    public void testSquareRootDecimal() {
+        assertEquals("Square root of 2 failed", 1.4142, Math.sqrt(2.0), 0.001);
+    }
+
+    @Test
+    public void testSquareRootZero() {
+        assertEquals("Square root of 0 failed", 0.0, Math.sqrt(0.0), 0.001);
+    }
     
     /**
      * Helper method to simulate calculator operations

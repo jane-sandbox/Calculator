@@ -43,7 +43,7 @@ public class Calculator extends JFrame implements ActionListener {
         
         // Button labels in order
         String[] buttonLabels = {
-            "C", "CE", "⌫", "÷",
+            "C", "√", "⌫", "÷",
             "7", "8", "9", "×",
             "4", "5", "6", "-",
             "1", "2", "3", "+",
@@ -73,7 +73,7 @@ public class Calculator extends JFrame implements ActionListener {
         // Color coding for different button types
         if (text.matches("[0-9]") || text.equals(".")) {
             button.setBackground(Color.WHITE);
-        } else if (text.matches("[+\\-×÷=]")) {
+        } else if (text.matches("[+\\-×÷=√]")) {
             button.setBackground(new Color(255, 165, 0)); // Orange for operators
             button.setForeground(Color.WHITE);
         } else {
@@ -91,8 +91,8 @@ public class Calculator extends JFrame implements ActionListener {
             case "C":
                 clearAll();
                 break;
-            case "CE":
-                clearEntry();
+            case "√":
+                squareRoot();
                 break;
             case "⌫":
                 backspace();
@@ -179,6 +179,24 @@ public class Calculator extends JFrame implements ActionListener {
         }
     }
     
+    private void squareRoot() {
+        double value = Double.parseDouble(display.getText());
+        if (value < 0) {
+            display.setText("Error: Invalid input");
+            operator = null;
+            startNewNumber = true;
+            return;
+        }
+        double result = Math.sqrt(value);
+        if (result == (long) result) {
+            display.setText(String.valueOf((long) result));
+        } else {
+            display.setText(String.valueOf(result));
+        }
+        startNewNumber = true;
+        firstOperand = result;
+    }
+
     private void handleOperator(String newOperator) {
         if (operator != null && !startNewNumber) {
             calculate();
