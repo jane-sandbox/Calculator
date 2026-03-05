@@ -1,0 +1,5 @@
+depot claude \
+  --session-id feature-auth \
+  --repository https://github.com/jane-sandbox/Calculator \
+  --branch jane/test-depot-claude \
+  "Add the ability to use brackets in the calculator function"
