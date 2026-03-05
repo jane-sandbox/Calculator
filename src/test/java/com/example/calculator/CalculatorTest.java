@@ -25,7 +25,7 @@ public class CalculatorTest {
     
     @Test
     public void testBasicMultiplication() {
-        double result = performCalculation(6.0, "×", 7.0);
+        double result = performCalculation(6.0, "*", 7.0);
         assertEquals("Multiplication test failed", 42.0, result, 0.001);
     }
     
@@ -62,7 +62,7 @@ public class CalculatorTest {
                 return first + second;
             case "-":
                 return first - second;
-            case "×":
+            case "*":
                 return first * second;
             case "÷":
                 if (second == 0) {

@@ -43,8 +43,8 @@ public class Calculator extends JFrame implements ActionListener {
         
         // Button labels in order
         String[] buttonLabels = {
-            "C", "CE", "⌫", "÷",
-            "7", "8", "9", "×",
+            "C", "CE", "x", "÷",
+            "7", "8", "9", "*",
             "4", "5", "6", "-",
             "1", "2", "3", "+",
             "±", "0", ".", "="
@@ -73,7 +73,7 @@ public class Calculator extends JFrame implements ActionListener {
         // Color coding for different button types
         if (text.matches("[0-9]") || text.equals(".")) {
             button.setBackground(Color.WHITE);
-        } else if (text.matches("[+\\-×÷=]")) {
+        } else if (text.matches("[+\\-*=]")) {
             button.setBackground(new Color(255, 165, 0)); // Orange for operators
             button.setForeground(Color.WHITE);
         } else {
@@ -94,7 +94,7 @@ public class Calculator extends JFrame implements ActionListener {
             case "CE":
                 clearEntry();
                 break;
-            case "⌫":
+            case "x":
                 backspace();
                 break;
             case "±":
@@ -102,7 +102,7 @@ public class Calculator extends JFrame implements ActionListener {
                 break;
             case "+":
             case "-":
-            case "×":
+            case "*":
             case "÷":
                 handleOperator(command);
                 break;
@@ -205,7 +205,7 @@ public class Calculator extends JFrame implements ActionListener {
                 case "-":
                     result = firstOperand - secondOperand;
                     break;
-                case "×":
+                case "*":
                     result = firstOperand * secondOperand;
                     break;
                 case "÷":
